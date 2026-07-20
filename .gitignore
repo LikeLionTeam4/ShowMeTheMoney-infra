@@ -1,0 +1,19 @@
+# 환경변수
+.env
+*/.env
+backend/.env
+
+# AWS / Terraform (추후 사용 대비 미리 포함)
+*.tfstate
+*.tfstate.backup
+.terraform/
+terraform.tfvars
+*.pem
+
+# OS / 에디터
+.DS_Store
+.idea/
+.vscode/
+
+# 로그
+*.log
