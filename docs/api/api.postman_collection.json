@@ -12,7 +12,7 @@
     ]
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:8080/api", "type": "string" },
+    { "key": "baseUrl", "value": "http://team4.mang.pe.kr/api", "type": "string" },
     { "key": "accessToken", "value": "", "type": "string" },
     { "key": "transactionId", "value": "1", "type": "string" },
     { "key": "recurringItemId", "value": "1", "type": "string" },
