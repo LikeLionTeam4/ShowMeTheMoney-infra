@@ -1,0 +1,10 @@
+.git
+.gradle
+.idea
+.DS_Store
+out/
+build/
+*.md
+.env
+application-*.yml
+src/test/

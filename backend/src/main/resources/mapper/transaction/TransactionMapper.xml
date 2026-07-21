@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.showmethemoney.transaction.infrastructure.TransactionMapper">
+
+    <resultMap id="TransactionResultMap" type="com.showmethemoney.transaction.domain.Transaction">
+        <id property="uuid" column="uuid"/>
+        <result property="uuidUser" column="uuid_user"/>
+        <result property="uuidCategory" column="uuid_category"/>
+        <result property="categoryCode" column="category_code"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="type" column="type"/>
+        <result property="amount" column="amount"/>
+        <result property="memo" column="memo"/>
+        <result property="transactionDate" column="transaction_date"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="deletedAt" column="deleted_at"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.showmethemoney.transaction.domain.Transaction"
+            useGeneratedKeys="true" keyProperty="uuid">
+        INSERT INTO transactions (uuid_user, uuid_category, type, amount, memo, transaction_date)
+        VALUES (#{uuidUser}, #{uuidCategory}, #{type}, #{amount}, #{memo}, #{transactionDate})
+    </insert>
+
+    <select id="findAll" resultMap="TransactionResultMap">
+        SELECT t.uuid, t.uuid_user, t.uuid_category, t.type, t.amount, t.memo, t.transaction_date,
+               t.created_at, t.updated_at, t.deleted_at,
+               c.code AS category_code, c.name AS category_name
+        FROM transactions t
+        JOIN categories c ON t.uuid_category = c.uuid
+        WHERE t.uuid_user = #{userId}
+          AND t.deleted_at IS NULL
+        <if test="request.type != null">AND t.type = #{request.type}</if>
+        <if test="request.categoryCode != null">AND c.code = #{request.categoryCode}</if>
+        <if test="request.period != null and request.period.length() == 4">
+            AND t.transaction_date BETWEEN CONCAT(#{request.period}, '-01-01') AND CONCAT(#{request.period}, '-12-31')
+        </if>
+        <if test="request.period != null and request.period.length() == 7">
+            AND DATE_FORMAT(t.transaction_date, '%Y-%m') = #{request.period}
+        </if>
+        <if test="request.period != null and request.period.length() == 10">
+            AND t.transaction_date = #{request.period}
+        </if>
+        ORDER BY t.transaction_date
+        <choose>
+            <when test="request.sort == 'asc'">ASC</when>
+            <otherwise>DESC</otherwise>
+        </choose>
+        LIMIT #{request.size} OFFSET #{offset}
+    </select>
+
+    <select id="findById" resultMap="TransactionResultMap">
+        SELECT t.uuid, t.uuid_user, t.uuid_category, t.type, t.amount, t.memo, t.transaction_date,
+               t.created_at, t.updated_at, t.deleted_at,
+               c.code AS category_code, c.name AS category_name
+        FROM transactions t
+        JOIN categories c ON t.uuid_category = c.uuid
+        WHERE t.uuid = #{id}
+    </select>
+
+    <update id="update" parameterType="com.showmethemoney.transaction.domain.Transaction">
+        UPDATE transactions
+        <set>
+            <if test="uuidCategory != null">uuid_category = #{uuidCategory},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="memo != null">memo = #{memo},</if>
+            <if test="transactionDate != null">transaction_date = #{transactionDate},</if>
+        </set>
+        WHERE uuid = #{uuid}
+          AND deleted_at IS NULL
+    </update>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*)
+        FROM transactions t
+        JOIN categories c ON t.uuid_category = c.uuid
+        WHERE t.uuid_user = #{userId}
+          AND t.deleted_at IS NULL
+        <if test="request.type != null">AND t.type = #{request.type}</if>
+        <if test="request.categoryCode != null">AND c.code = #{request.categoryCode}</if>
+        <if test="request.period != null and request.period.length() == 4">
+            AND t.transaction_date BETWEEN CONCAT(#{request.period}, '-01-01') AND CONCAT(#{request.period}, '-12-31')
+        </if>
+        <if test="request.period != null and request.period.length() == 7">
+            AND DATE_FORMAT(t.transaction_date, '%Y-%m') = #{request.period}
+        </if>
+        <if test="request.period != null and request.period.length() == 10">
+            AND t.transaction_date = #{request.period}
+        </if>
+    </select>
+
+    <select id="sumAmountByType" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(t.amount), 0)
+        FROM transactions t
+        JOIN categories c ON t.uuid_category = c.uuid
+        WHERE t.uuid_user = #{userId}
+          AND t.type = #{type}
+          AND t.deleted_at IS NULL
+        <if test="request.period != null and request.period.length() == 4">
+            AND t.transaction_date BETWEEN CONCAT(#{request.period}, '-01-01') AND CONCAT(#{request.period}, '-12-31')
+        </if>
+        <if test="request.period != null and request.period.length() == 7">
+            AND DATE_FORMAT(t.transaction_date, '%Y-%m') = #{request.period}
+        </if>
+        <if test="request.period != null and request.period.length() == 10">
+            AND t.transaction_date = #{request.period}
+        </if>
+    </select>
+
+    <update id="softDelete">
+        UPDATE transactions SET deleted_at = NOW() WHERE uuid = #{id} AND deleted_at IS NULL
+    </update>
+
+</mapper>

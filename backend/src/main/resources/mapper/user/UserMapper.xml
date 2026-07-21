@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.showmethemoney.user.infrastructure.UserMapper">
+
+    <resultMap id="UserResultMap" type="com.showmethemoney.user.domain.User">
+        <id property="uuid" column="uuid"/>
+        <result property="username" column="username"/>
+        <result property="email" column="email"/>
+        <result property="password" column="password"/>
+        <result property="nickname" column="nickname"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="deletedAt" column="deleted_at"/>
+    </resultMap>
+
+    <select id="findById" resultMap="UserResultMap">
+        SELECT uuid, username, email, password, nickname, created_at, updated_at, deleted_at
+        FROM users
+        WHERE uuid = #{id}
+    </select>
+
+    <update id="updateNickname">
+        UPDATE users SET nickname = #{nickname} WHERE uuid = #{id} AND deleted_at IS NULL
+    </update>
+
+    <update id="softDelete">
+        UPDATE users SET deleted_at = NOW() WHERE uuid = #{id} AND deleted_at IS NULL
+    </update>
+
+</mapper>

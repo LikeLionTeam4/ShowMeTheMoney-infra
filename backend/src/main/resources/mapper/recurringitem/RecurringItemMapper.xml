@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.showmethemoney.recurringitem.infrastructure.RecurringItemMapper">
+
+    <resultMap id="RecurringItemResultMap" type="com.showmethemoney.recurringitem.domain.RecurringItem">
+        <id property="uuid" column="uuid"/>
+        <result property="uuidUser" column="uuid_user"/>
+        <result property="uuidCategory" column="uuid_category"/>
+        <result property="categoryCode" column="category_code"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="type" column="type"/>
+        <result property="name" column="name"/>
+        <result property="amount" column="amount"/>
+        <result property="billingDay" column="billing_day"/>
+        <result property="isActive" column="is_active"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="deletedAt" column="deleted_at"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.showmethemoney.recurringitem.domain.RecurringItem"
+            useGeneratedKeys="true" keyProperty="uuid">
+        INSERT INTO recurring_items (uuid_user, uuid_category, type, name, amount, billing_day)
+        VALUES (#{uuidUser}, #{uuidCategory}, #{type}, #{name}, #{amount}, #{billingDay})
+    </insert>
+
+    <select id="findAll" resultMap="RecurringItemResultMap">
+        SELECT r.uuid, r.uuid_user, r.uuid_category, r.type, r.name, r.amount, r.billing_day,
+               r.is_active, r.created_at, r.deleted_at,
+               c.code AS category_code, c.name AS category_name
+        FROM recurring_items r
+        JOIN categories c ON r.uuid_category = c.uuid
+        WHERE r.uuid_user = #{userId}
+          AND r.deleted_at IS NULL
+        <if test="isActive != null">AND r.is_active = #{isActive}</if>
+        <if test="type != null">AND r.type = #{type}</if>
+        ORDER BY r.created_at DESC
+    </select>
+
+    <select id="findById" resultMap="RecurringItemResultMap">
+        SELECT r.uuid, r.uuid_user, r.uuid_category, r.type, r.name, r.amount, r.billing_day,
+               r.is_active, r.created_at, r.deleted_at,
+               c.code AS category_code, c.name AS category_name
+        FROM recurring_items r
+        JOIN categories c ON r.uuid_category = c.uuid
+        WHERE r.uuid = #{id}
+    </select>
+
+    <update id="update" parameterType="com.showmethemoney.recurringitem.domain.RecurringItem">
+        UPDATE recurring_items
+        <set>
+            <if test="uuidCategory != null">uuid_category = #{uuidCategory},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="billingDay != null">billing_day = #{billingDay},</if>
+            <if test="isActive != null">is_active = #{isActive},</if>
+        </set>
+        WHERE uuid = #{uuid}
+          AND deleted_at IS NULL
+    </update>
+
+    <update id="softDelete">
+        UPDATE recurring_items SET deleted_at = NOW() WHERE uuid = #{id} AND deleted_at IS NULL
+    </update>
+
+</mapper>
