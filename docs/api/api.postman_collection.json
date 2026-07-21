@@ -1,0 +1,405 @@
+{
+  "info": {
+    "_postman_id": "b3f6b1f0-3a7a-4e3a-9b0e-showmethemoney",
+    "name": "ShowMeTheMoney API",
+    "description": "docs/api/api.md 기반 API 명세 (실제 백엔드 응답 형식 반영)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{accessToken}}", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/api", "type": "string" },
+    { "key": "accessToken", "value": "", "type": "string" },
+    { "key": "transactionId", "value": "1", "type": "string" },
+    { "key": "recurringItemId", "value": "1", "type": "string" },
+    { "key": "budgetId", "value": "1", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "회원가입",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"hong123\",\n  \"name\": \"홍길동\",\n  \"email\": \"hong@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/signup",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "signup"]
+            }
+          }
+        },
+        {
+          "name": "로그인",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.success && json.data && json.data.accessToken) {",
+                  "    pm.collectionVariables.set('accessToken', json.data.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "로그아웃",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('accessToken', '');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "카테고리 목록 조회",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories?type=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["categories"],
+              "query": [
+                { "key": "type", "value": "0", "description": "0 지출 / 1 수입 (생략 시 전체)", "disabled": true }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "내역 생성",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": 0,\n  \"categoryCode\": \"FOOD\",\n  \"amount\": 15000,\n  \"memo\": \"점심\",\n  \"transactionAt\": \"2026-06-29\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions"]
+            }
+          }
+        },
+        {
+          "name": "내역 목록 조회",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transactions?type=0&categoryCode=FOOD&period=2026-06&sort=desc&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions"],
+              "query": [
+                { "key": "type", "value": "0", "disabled": true },
+                { "key": "categoryCode", "value": "FOOD", "disabled": true },
+                { "key": "period", "value": "2026-06", "disabled": true },
+                { "key": "sort", "value": "desc" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "내역 단건 조회",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transactions/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions", ":id"],
+              "variable": [
+                { "key": "id", "value": "{{transactionId}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "내역 수정",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 20000,\n  \"memo\": \"저녁\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/transactions/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions", ":id"],
+              "variable": [
+                { "key": "id", "value": "{{transactionId}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "내역 삭제",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transactions/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["transactions", ":id"],
+              "variable": [
+                { "key": "id", "value": "{{transactionId}}" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recurring Items",
+      "item": [
+        {
+          "name": "고정 항목 생성",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": 0,\n  \"categoryCode\": \"HOUSING\",\n  \"name\": \"월세\",\n  \"amount\": 500000,\n  \"billingDay\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/recurring-items",
+              "host": ["{{baseUrl}}"],
+              "path": ["recurring-items"]
+            }
+          }
+        },
+        {
+          "name": "고정 항목 목록 조회",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recurring-items?isActive=true&type=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["recurring-items"],
+              "query": [
+                { "key": "isActive", "value": "true", "disabled": true },
+                { "key": "type", "value": "0", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "고정 항목 수정",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 550000,\n  \"isActive\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/recurring-items/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["recurring-items", ":id"],
+              "variable": [
+                { "key": "id", "value": "{{recurringItemId}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "고정 항목 삭제",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recurring-items/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["recurring-items", ":id"],
+              "variable": [
+                { "key": "id", "value": "{{recurringItemId}}" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Budgets",
+      "item": [
+        {
+          "name": "예산 설정",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"yearMonth\": \"202606\",\n  \"amount\": 2000000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/budgets",
+              "host": ["{{baseUrl}}"],
+              "path": ["budgets"]
+            }
+          }
+        },
+        {
+          "name": "예산 조회",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/budgets?yearMonth=202606",
+              "host": ["{{baseUrl}}"],
+              "path": ["budgets"],
+              "query": [
+                { "key": "yearMonth", "value": "202606" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "예산 수정",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 2200000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/budgets/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["budgets", ":id"],
+              "variable": [
+                { "key": "id", "value": "{{budgetId}}" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "월별 요약 조회",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/summary?yearMonth=202606",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "summary"],
+              "query": [
+                { "key": "yearMonth", "value": "202606" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "카테고리별 지출 조회",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/categories?yearMonth=202606&type=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "categories"],
+              "query": [
+                { "key": "yearMonth", "value": "202606" },
+                { "key": "type", "value": "0", "disabled": true }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "헬스 체크",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -3,6 +3,8 @@
 ## 프로젝트 개요
 1차 프로젝트에서 구축한 개인 자산 관리 플랫폼 "Show Me The Money"의 인프라를 AWS 기반으로 전면 전환하는 2차 프로젝트입니다.
 
+- 1차 프로젝트: https://github.com/YeonWoojuice/ShowMeTheMoney/tree/main
+
 - **인프라 전환**: VMware Fusion 기반 온프레미스 Kubernetes → AWS EKS
 - **데이터베이스**: RDS MySQL 적용으로 백업·복구 체계 강화
 - **IaC**: Terraform 기반으로 인프라 재현성 확보
