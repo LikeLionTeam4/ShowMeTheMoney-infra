@@ -12,7 +12,7 @@
     ]
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://team4.mang.pe.kr/api", "type": "string" },
+    { "key": "baseUrl", "value": "https://team4.mang.pe.kr/api", "type": "string" },
     { "key": "accessToken", "value": "", "type": "string" },
     { "key": "intruderAccessToken", "value": "", "type": "string" },
     { "key": "qaTs", "value": "", "type": "string" },
