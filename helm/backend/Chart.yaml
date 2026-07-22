@@ -1,0 +1,6 @@
+apiVersion: v2
+name: backend
+description: Show Me The Money backend (Spring Boot) Helm chart
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
