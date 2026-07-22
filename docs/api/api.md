@@ -744,13 +744,12 @@ DB 연결이 끊긴 경우에도 HTTP status는 `200`이며 `data.status`가 `"D
 
 ## Known Limitations
 
-문서화 과정에서 실제 확인된, 현재 구현의 알려진 동작 차이다. 이번 라운드에서는 수정하지 않고 "현재 동작 그대로" 문서화만 한다.
+문서화 과정에서 실제 확인된, 현재 구현의 알려진 동작 차이다.
 
-1. **미인증 401 / 처리되지 않은 예외의 500이 공통 응답 포맷을 따르지 않음.**
-   토큰이 없거나 잘못된 경우, 그리고 `MethodArgumentTypeMismatchException`(예: `?type=abc`) · `MissingServletRequestParameterException`(필수 쿼리 파라미터 누락)이 발생하는 경우 모두 `GlobalExceptionHandler`를 거치지 않고 Spring Security의 `AuthenticationEntryPoint`(`res.sendError(401)`)로 처리되어, **본문이 완전히 비어있는 401**이 반환된다. 상단에 정의된 `{"success":false,"data":null,"error":{...}}` 포맷과 다르다.
-   - 재현: 정상 토큰으로 `GET /transactions?type=abc`, `GET /budgets`(yearMonth 누락), `GET /dashboard/summary`(yearMonth 누락), `GET /transactions/abc`(숫자 아닌 id) 호출 시 전부 400이 아니라 401(빈 본문)이 나옴. 같은 토큰으로 정상 요청(`GET /categories`)은 200이 정상적으로 나오므로 토큰 자체 문제는 아님.
-   - 영향 범위: `type`/`categoryCode` 등 타입이 있는 쿼리 파라미터를 받는 모든 GET, `yearMonth`가 필수인 `budgets`/`dashboard`, 숫자가 아닌 path id를 받는 모든 `{id}` 엔드포인트.
-2. **`/budgets`의 `yearMonth`는 6자리인지만 검사하고 숫자인지는 검사하지 않는다.**
-   `POST /budgets {"yearMonth":"abcdef", "amount":1000}` → `201` 성공, DB에 `"abcd-ef"`로 저장됨.
-3. **카테고리-거래유형 불일치는 `CATEGORY_TYPE_MISMATCH`가 아니라 `CATEGORY_NOT_FOUND`로 나간다.** (에러 코드 카탈로그 참고)
-4. **`GET /health`는 DB 연결 실패 시에도 HTTP `200`을 반환한다.** 실패 여부는 `data.status` 필드로만 판단 가능.
+1. ~~인증된 요청도 파라미터 바인딩 오류 시 401(빈 본문)이 반환됨~~ **[Fixed]**
+   `MethodArgumentTypeMismatchException`(예: `?type=abc`) · `MissingServletRequestParameterException`(필수 쿼리 파라미터 누락) 발생 시 `GlobalExceptionHandler`가 처리하지 않아 Spring Security의 `AuthenticationEntryPoint`로 잘못 위임되어 본문 없는 401이 나가던 문제. `GlobalExceptionHandler`에 두 예외 핸들러를 추가해 `400 INVALID_INPUT`(공통 응답 포맷)으로 반환하도록 수정함 (이슈 #7). 로컬에 실제 백엔드+MySQL을 띄워 수정 전(401 재현)/후(400 정상)를 curl로 직접 검증, 회귀 테스트 통과.
+2. ~~`/budgets`의 `yearMonth`가 숫자 여부를 검증하지 않음~~ **[Fixed]**
+   `POST /budgets {"yearMonth":"abcdef", "amount":1000}`처럼 문자 6자리도 통과해 DB에 `"abcd-ef"`로 저장되던 문제. `BudgetService`/`DashboardService`에 중복돼 있던 변환 로직을 `YearMonthKey` 공통 유틸로 추출하고 정규식(`^\d{6}$`) 검증으로 교체함 (이슈 #8).
+3. **카테고리-거래유형 불일치는 `CATEGORY_TYPE_MISMATCH`가 아니라 `CATEGORY_NOT_FOUND`로 나간다.** (에러 코드 카탈로그 참고, 아직 미수정)
+4. ~~`GET /health`는 DB 연결 실패 시에도 HTTP `200`을 반환한다~~ **[Fixed]** — DB 연결 실패 시 `503`을 반환하도록 수정됨 (PR #9, `fix/health-check-status`).
+5. **토큰이 아예 없거나 형식이 잘못된 경우(`Authorization` 헤더 없음 / `Bearer` 아닌 값 / 파싱 불가 토큰) 401 응답의 본문이 비어있다.** 이건 위 1번과 달리 `SecurityConfig`의 `authenticationEntryPoint`(`res.sendError(401)`)가 의도한 그대로 동작하는 것이며, 아직 공통 응답 포맷을 따르지 않는 별개의 항목이다. 필요하면 `authenticationEntryPoint`에서도 `ApiResponse` 포맷으로 응답하도록 수정 검토.
