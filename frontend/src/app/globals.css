@@ -29,7 +29,7 @@
 body {
   background: var(--color-page);
   color: var(--color-foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-pretendard), Arial, Helvetica, sans-serif;
 }
 
 /* LikeLion-toned surfaces & buttons — see /DESIGN.md */
