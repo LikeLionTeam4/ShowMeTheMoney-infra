@@ -56,4 +56,14 @@ class HealthControllerTest {
         mockMvc.perform(get("/api/health"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void 핑_DB오류여도_정상응답() throws Exception {
+        given(jdbcTemplate.queryForObject(any(String.class), eq(Integer.class)))
+                .willThrow(new RuntimeException("DB connection failed"));
+
+        mockMvc.perform(get("/api/ping"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("UP"));
+    }
 }
