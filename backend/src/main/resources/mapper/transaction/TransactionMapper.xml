@@ -8,6 +8,7 @@
         <id property="uuid" column="uuid"/>
         <result property="uuidUser" column="uuid_user"/>
         <result property="uuidCategory" column="uuid_category"/>
+        <result property="uuidRecurringItem" column="uuid_recurring_item"/>
         <result property="categoryCode" column="category_code"/>
         <result property="categoryName" column="category_name"/>
         <result property="type" column="type"/>
@@ -21,12 +22,21 @@
 
     <insert id="insert" parameterType="com.showmethemoney.transaction.domain.Transaction"
             useGeneratedKeys="true" keyProperty="uuid">
-        INSERT INTO transactions (uuid_user, uuid_category, type, amount, memo, transaction_date)
-        VALUES (#{uuidUser}, #{uuidCategory}, #{type}, #{amount}, #{memo}, #{transactionDate})
+        INSERT INTO transactions (uuid_user, uuid_category, uuid_recurring_item, type, amount, memo, transaction_date)
+        VALUES (#{uuidUser}, #{uuidCategory}, #{uuidRecurringItem}, #{type}, #{amount}, #{memo}, #{transactionDate})
     </insert>
 
+    <select id="existsByRecurringItemAndDate" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM transactions
+            WHERE uuid_recurring_item = #{uuidRecurringItem}
+              AND transaction_date = #{date}
+              AND deleted_at IS NULL
+        )
+    </select>
+
     <select id="findAll" resultMap="TransactionResultMap">
-        SELECT t.uuid, t.uuid_user, t.uuid_category, t.type, t.amount, t.memo, t.transaction_date,
+        SELECT t.uuid, t.uuid_user, t.uuid_category, t.uuid_recurring_item, t.type, t.amount, t.memo, t.transaction_date,
                t.created_at, t.updated_at, t.deleted_at,
                c.code AS category_code, c.name AS category_name
         FROM transactions t
@@ -53,7 +63,7 @@
     </select>
 
     <select id="findById" resultMap="TransactionResultMap">
-        SELECT t.uuid, t.uuid_user, t.uuid_category, t.type, t.amount, t.memo, t.transaction_date,
+        SELECT t.uuid, t.uuid_user, t.uuid_category, t.uuid_recurring_item, t.type, t.amount, t.memo, t.transaction_date,
                t.created_at, t.updated_at, t.deleted_at,
                c.code AS category_code, c.name AS category_name
         FROM transactions t

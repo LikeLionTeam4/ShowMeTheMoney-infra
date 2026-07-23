@@ -6,12 +6,15 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Mapper
 public interface TransactionMapper {
 
     void insert(Transaction transaction);
+
+    boolean existsByRecurringItemAndDate(@Param("uuidRecurringItem") Long uuidRecurringItem, @Param("date") LocalDate date);
 
     List<Transaction> findAll(@Param("userId") Long userId, @Param("request") TransactionListRequest request, @Param("offset") int offset);
 

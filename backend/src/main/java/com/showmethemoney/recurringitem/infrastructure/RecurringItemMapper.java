@@ -12,6 +12,8 @@ public interface RecurringItemMapper {
 
     List<RecurringItem> findAll(Long userId, Boolean isActive, Integer type);
 
+    List<RecurringItem> findAllActive();
+
     RecurringItem findById(Long id);
 
     void update(RecurringItem item);

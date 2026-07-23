@@ -38,6 +38,16 @@
         ORDER BY r.created_at DESC
     </select>
 
+    <select id="findAllActive" resultMap="RecurringItemResultMap">
+        SELECT r.uuid, r.uuid_user, r.uuid_category, r.type, r.name, r.amount, r.billing_day,
+               r.is_active, r.created_at, r.deleted_at,
+               c.code AS category_code, c.name AS category_name
+        FROM recurring_items r
+        JOIN categories c ON r.uuid_category = c.uuid
+        WHERE r.is_active = 1
+          AND r.deleted_at IS NULL
+    </select>
+
     <select id="findById" resultMap="RecurringItemResultMap">
         SELECT r.uuid, r.uuid_user, r.uuid_category, r.type, r.name, r.amount, r.billing_day,
                r.is_active, r.created_at, r.deleted_at,

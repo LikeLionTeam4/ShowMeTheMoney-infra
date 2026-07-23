@@ -9,6 +9,7 @@ public class Transaction {
     private Long uuid;
     private Long uuidUser;
     private Long uuidCategory;
+    private Long uuidRecurringItem;
     private String categoryCode;
     private String categoryName;
     private Integer type; // 0=EXPENSE, 1=INCOME
@@ -22,6 +23,7 @@ public class Transaction {
     public Long getUuid() { return uuid; }
     public Long getUuidUser() { return uuidUser; }
     public Long getUuidCategory() { return uuidCategory; }
+    public Long getUuidRecurringItem() { return uuidRecurringItem; }
     public String getCategoryCode() { return categoryCode; }
     public String getCategoryName() { return categoryName; }
     public Integer getType() { return type; }
@@ -34,6 +36,7 @@ public class Transaction {
     public void setUuid(Long uuid) { this.uuid = uuid; }
     public void setUuidUser(Long uuidUser) { this.uuidUser = uuidUser; }
     public void setUuidCategory(Long uuidCategory) { this.uuidCategory = uuidCategory; }
+    public void setUuidRecurringItem(Long uuidRecurringItem) { this.uuidRecurringItem = uuidRecurringItem; }
     public void setCategoryCode(String categoryCode) { this.categoryCode = categoryCode; }
     public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
     public void setType(Integer type) { this.type = type; }
