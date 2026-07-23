@@ -1,9 +1,15 @@
+nameOverride: ""
+fullnameOverride: ""
+
+commonLabels:
+  Version: smtm-v1
+
 replicaCount: 2
 
 image:
   # NEXT_PUBLIC_API_URL은 빌드타임에 번들에 박히므로, 도메인이 바뀌면
   # 이 태그(이미지)를 다시 빌드해야 한다 (docs/api/README 및 루트 README 참고).
-  repository: "<ACCOUNT_ID>.dkr.ecr.ap-northeast-2.amazonaws.com/team4-frontend"
+  repository: smtm-frontend
   tag: "latest"
   pullPolicy: IfNotPresent
 
@@ -24,6 +30,9 @@ resources:
 
 probes:
   path: /
+  startup:
+    periodSeconds: 5
+    failureThreshold: 30
   readiness:
     initialDelaySeconds: 10
     periodSeconds: 10
@@ -31,14 +40,30 @@ probes:
     initialDelaySeconds: 20
     periodSeconds: 20
 
-# ALB Ingress Controller 세팅 완료 후 true로 전환.
-# host/annotations/backendService 값은 팀원의 EKS/도메인 구성이 확정되면 채울 것.
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 65
+
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+
+topologySpreadConstraints:
+  enabled: true
+  zone:
+    maxSkew: 1
+    whenUnsatisfiable: DoNotSchedule
+  hostname:
+    maxSkew: 1
+    whenUnsatisfiable: ScheduleAnyway
+
 ingress:
   enabled: false
   className: alb
-  host: team4.mang.pe.kr
-  tlsSecretName: team4-tls
-  backendServiceName: team4-backend
+  host: smtm.example.invalid
+  backendServiceName: smtm-backend
   backendServicePort: 8080
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing

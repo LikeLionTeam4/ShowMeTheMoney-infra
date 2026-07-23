@@ -1,0 +1,39 @@
+fullnameOverride: smtm-backend
+
+image:
+  repository: 061039804626.dkr.ecr.ap-northeast-2.amazonaws.com/smtm-backend
+  tag: pr11-review-p1
+
+config:
+  data:
+    DB_HOST: team4-mysql.c3qme6c6e7fj.ap-northeast-2.rds.amazonaws.com
+    DB_PORT: "3306"
+    DB_NAME: showmethemoney
+    DB_SSL_MODE: REQUIRED
+    CORS_ALLOWED_ORIGINS: https://smtm.mang.pe.kr
+    JWT_EXPIRATION: "86400"
+    SPRING_PROFILES_ACTIVE: prod
+
+secret:
+  name: smtm-backend-secret
+  create: false
+
+secretStore:
+  enabled: true
+  name: smtm-aws-secretsmanager
+  region: ap-northeast-2
+
+externalSecret:
+  enabled: true
+  target:
+    name: smtm-backend-secret
+  rds:
+    key: arn:aws:secretsmanager:ap-northeast-2:061039804626:secret:rds!db-798bac98-1947-49ef-95f7-08bcfa911ce6-Lz7bbk
+  application:
+    key: smtm/application
+
+autoscaling:
+  enabled: true
+
+podDisruptionBudget:
+  enabled: true
