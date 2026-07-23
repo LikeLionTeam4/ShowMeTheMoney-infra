@@ -129,4 +129,20 @@ class TransactionControllerTest {
         mockMvc.perform(get("/api/transactions"))
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    void 목록조회_type_파라미터_타입오류_400() throws Exception {
+        mockMvc.perform(get("/api/transactions").param("type", "abc").with(authentication(userAuth())))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("INVALID_INPUT"));
+    }
+
+    @Test
+    void 단건조회_숫자아닌_id_400() throws Exception {
+        mockMvc.perform(get("/api/transactions/abc").with(authentication(userAuth())))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("INVALID_INPUT"));
+    }
 }

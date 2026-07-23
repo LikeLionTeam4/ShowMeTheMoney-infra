@@ -2,8 +2,7 @@ package com.showmethemoney.dashboard.application;
 
 import com.showmethemoney.budget.domain.Budget;
 import com.showmethemoney.budget.infrastructure.BudgetMapper;
-import com.showmethemoney.common.BusinessException;
-import com.showmethemoney.common.ErrorCode;
+import com.showmethemoney.common.YearMonthKey;
 import com.showmethemoney.dashboard.infrastructure.CategoryAmountRow;
 import com.showmethemoney.dashboard.infrastructure.DashboardMapper;
 import com.showmethemoney.dashboard.interfaces.dto.CategoryExpenseResponse;
@@ -28,7 +27,7 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public DashboardSummaryResponse getSummary(Long userId, String yearMonth) {
-        String dbYearMonth = toDbYearMonth(yearMonth);
+        String dbYearMonth = YearMonthKey.toDbFormat(yearMonth);
 
         BigDecimal totalIncome = dashboardMapper.sumAmountByType(userId, dbYearMonth, 1);
         BigDecimal totalExpense = dashboardMapper.sumAmountByType(userId, dbYearMonth, 0);
@@ -51,7 +50,7 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public List<CategoryExpenseResponse> getCategoryExpenses(Long userId, String yearMonth, Integer type) {
-        String dbYearMonth = toDbYearMonth(yearMonth);
+        String dbYearMonth = YearMonthKey.toDbFormat(yearMonth);
         int resolvedType = type != null ? type : 0;
 
         List<CategoryAmountRow> rows = dashboardMapper.sumByCategory(userId, dbYearMonth, resolvedType);
@@ -66,11 +65,5 @@ public class DashboardService {
                     return new CategoryExpenseResponse(row.getCategoryCode(), row.getCategoryName(), row.getAmount(), percentage);
                 })
                 .toList();
-    }
-
-    // "202606" → "2026-06"
-    private String toDbYearMonth(String ym) {
-        if (ym == null || ym.length() != 6) throw new BusinessException(ErrorCode.INVALID_INPUT);
-        return ym.substring(0, 4) + "-" + ym.substring(4);
     }
 }

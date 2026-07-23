@@ -95,4 +95,12 @@ class BudgetControllerTest {
         mockMvc.perform(get("/api/budgets").param("yearMonth", "202606"))
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    void 조회_yearMonth_파라미터_누락_400() throws Exception {
+        mockMvc.perform(get("/api/budgets").with(authentication(userAuth())))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("INVALID_INPUT"));
+    }
 }

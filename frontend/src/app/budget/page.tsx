@@ -29,7 +29,6 @@ export default function BudgetPage() {
 
   useEffect(() => {
     fetchBudget();
-    setIsEditing(false);
   }, [fetchBudget]);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -72,6 +71,7 @@ export default function BudgetPage() {
             onClick={() => {
               const d = new Date(Math.floor(yearMonth / 100), (yearMonth % 100) - 2);
               setYearMonth(toYearMonth(d));
+              setIsEditing(false);
             }}
             className="px-3 py-1.5 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-lg text-sm text-gray-800 dark:text-white"
           >
@@ -82,6 +82,7 @@ export default function BudgetPage() {
             onClick={() => {
               const d = new Date(Math.floor(yearMonth / 100), yearMonth % 100);
               setYearMonth(toYearMonth(d));
+              setIsEditing(false);
             }}
             className="px-3 py-1.5 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-lg text-sm text-gray-800 dark:text-white"
           >

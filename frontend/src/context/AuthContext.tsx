@@ -19,19 +19,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      setIsLoading(false);
-      return;
-    }
-    api
-      .get<{ data: User }>("/api/users/me")
-      .then((res) => setUser(res.data.data))
-      .catch(() => {
+    async function initAuth() {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        setIsLoading(false);
+        return;
+      }
+      try {
+        const res = await api.get<{ data: User }>("/api/users/me");
+        setUser(res.data.data);
+      } catch {
         localStorage.removeItem("accessToken");
         setUser(null);
-      })
-      .finally(() => setIsLoading(false));
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    initAuth();
   }, []);
 
   async function login(username: string, password: string) {
