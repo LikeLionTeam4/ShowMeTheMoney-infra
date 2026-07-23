@@ -54,11 +54,6 @@ config:
 
 secret:
   name: smtm-backend-secret
-  create: false
-  data:
-    DB_USERNAME: ""
-    DB_PASSWORD: ""
-    JWT_SECRET: ""
 
 secretStore:
   enabled: false

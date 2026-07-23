@@ -1,8 +1,8 @@
 fullnameOverride: smtm-frontend
 
 image:
-  repository: 061039804626.dkr.ecr.ap-northeast-2.amazonaws.com/smtm-frontend
-  tag: pr11-review-p1
+  repository: example.invalid/smtm-frontend
+  tag: ci
 
 autoscaling:
   enabled: true
@@ -13,17 +13,14 @@ podDisruptionBudget:
 ingress:
   enabled: true
   className: alb
-  host: smtm.mang.pe.kr
+  host: smtm.example.invalid
   backendServiceName: smtm-backend
   backendServicePort: 8080
   annotations:
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:061039804626:certificate/41469aa6-7735-4e69-b243-881bc1c82333
     alb.ingress.kubernetes.io/group.name: smtm
     alb.ingress.kubernetes.io/ip-address-type: ipv4
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
     alb.ingress.kubernetes.io/load-balancer-name: smtm-alb
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/ssl-redirect: "443"
-    alb.ingress.kubernetes.io/subnets: subnet-0b9526c86dd1c11e2,subnet-04012811b62580c6f
-    alb.ingress.kubernetes.io/tags: Version=smtm-v1
     alb.ingress.kubernetes.io/target-type: ip

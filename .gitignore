@@ -10,6 +10,10 @@ backend/.env
 terraform.tfvars
 *.pem
 
+# 운영 Helm 값은 공개 저장소에 커밋하지 않음
+helm/**/values-prod.yaml
+helm/**/values-*.local.yaml
+
 # OS / 에디터
 .DS_Store
 .idea/
