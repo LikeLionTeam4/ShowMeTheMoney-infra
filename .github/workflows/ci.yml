@@ -139,12 +139,12 @@ jobs:
             --values helm/frontend/values-ci.yaml \
             > "${RUNNER_TEMP}/helm-rendered/frontend.yaml"
 
-      - name: Reject infrastructure identifiers in Helm files
+      - name: Reject infrastructure identifiers in tracked configuration
         run: |
           if grep -REn \
             '([0-9]{12}|arn:aws:(acm|secretsmanager)|subnet-[0-9a-f]+|[a-zA-Z0-9.-]+\.rds\.amazonaws\.com)' \
-            helm; then
-            echo "Infrastructure identifier found in a tracked Helm file."
+            helm docs; then
+            echo "Infrastructure identifier found in a tracked configuration file."
             exit 1
           fi
 
