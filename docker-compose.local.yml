@@ -1,0 +1,39 @@
+# 로컬 개발용 override. db 컨테이너를 포함해 원격 RDS 없이도 전체 스택을 띄운다.
+# 사용법: docker compose -f docker-compose.yml -f docker-compose.local.yml up
+#
+# backend는 env_file(./backend/.env)로 RDS 접속정보를 읽지만, 아래 environment가
+# 우선순위가 더 높아 DB_HOST 등만 로컬 db 컨테이너로 덮어써진다. .env 자체는 그대로 둔다.
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: local
+      MYSQL_DATABASE: showmethemoney
+      MYSQL_USER: showmethemoney
+      MYSQL_PASSWORD: local
+      TZ: Asia/Seoul
+    ports:
+      # 로컬에 이미 3306을 쓰는 MySQL이 떠 있을 수 있어 호스트 포트만 3307로 매핑.
+      # 컨테이너 간 통신(backend -> db)은 내부 3306을 그대로 쓰므로 영향 없음.
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: showmethemoney
+      DB_USERNAME: showmethemoney
+      DB_PASSWORD: local
+
+volumes:
+  mysql_data:
