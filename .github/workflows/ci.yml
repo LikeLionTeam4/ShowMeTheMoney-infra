@@ -118,30 +118,25 @@ jobs:
         run: |
           helm lint helm/backend --strict --kube-version 1.36.0
           helm lint helm/frontend --strict --kube-version 1.36.0
+          helm lint helm/backend --strict --kube-version 1.36.0 \
+            --values helm/backend/values-prod.yaml
+          helm lint helm/frontend --strict --kube-version 1.36.0 \
+            --values helm/frontend/values-prod.yaml
 
-      - name: Render Helm charts
+      - name: Render production Helm charts
         run: |
           mkdir -p "${RUNNER_TEMP}/helm-rendered"
 
           helm template smtm-backend helm/backend \
             --namespace smtm \
             --kube-version 1.36.0 \
-            --set image.repository=example.invalid/smtm-backend \
-            --set image.tag=ci \
-            --set secret.create=true \
-            --set-string secret.data.DB_HOST=mysql \
-            --set-string secret.data.DB_USERNAME=ci_user \
-            --set-string secret.data.DB_PASSWORD=ci_password \
-            --set-string secret.data.JWT_SECRET=ci-only-jwt-secret-key-with-at-least-32-bytes \
+            --values helm/backend/values-prod.yaml \
             > "${RUNNER_TEMP}/helm-rendered/backend.yaml"
 
           helm template smtm-frontend helm/frontend \
             --namespace smtm \
             --kube-version 1.36.0 \
-            --set image.repository=example.invalid/smtm-frontend \
-            --set image.tag=ci \
-            --set ingress.enabled=true \
-            --set ingress.host=smtm.example.invalid \
+            --values helm/frontend/values-prod.yaml \
             > "${RUNNER_TEMP}/helm-rendered/frontend.yaml"
 
       - name: Check rendered manifests
@@ -153,6 +148,25 @@ jobs:
             echo "Unresolved placeholder found in rendered Helm manifests."
             exit 1
           fi
+
+          if grep -REn \
+            'team4-(backend|frontend)|team4\.mang\.pe\.kr|image: .*:latest' \
+            "${RUNNER_TEMP}/helm-rendered"; then
+            echo "Legacy or mutable production value found in rendered Helm manifests."
+            exit 1
+          fi
+
+          for kind in \
+            Deployment Service ConfigMap SecretStore ExternalSecret \
+            HorizontalPodAutoscaler PodDisruptionBudget; do
+            grep -q "^kind: ${kind}$" "${RUNNER_TEMP}/helm-rendered/backend.yaml"
+          done
+
+          for kind in \
+            Deployment Service Ingress HorizontalPodAutoscaler \
+            PodDisruptionBudget; do
+            grep -q "^kind: ${kind}$" "${RUNNER_TEMP}/helm-rendered/frontend.yaml"
+          done
 
   docker-build:
     name: Docker image build
