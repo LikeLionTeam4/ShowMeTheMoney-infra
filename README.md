@@ -1,10 +1,25 @@
 # ShowMeTheMoney-infra
 
+[![CI](https://github.com/LikeLionTeam4/ShowMeTheMoney-infra/actions/workflows/ci.yml/badge.svg)](https://github.com/LikeLionTeam4/ShowMeTheMoney-infra/actions/workflows/ci.yml)
+
+## 목차
+
+- [프로젝트 개요](#프로젝트-개요)
+- [기술 스택](#기술-스택)
+- [진행 상태](#진행-상태)
+- [아키텍처](#아키텍처)
+  - [ERD](#erd)
+- [AWS 리소스 스펙 요약](#aws-리소스-스펙-요약)
+- [폴더 구조](#폴더-구조)
+- [문서 안내](#문서-안내)
+- [사용법](#사용법)
+
 ## 프로젝트 개요
 
 1차 프로젝트에서 구축한 개인 자산 관리 플랫폼 "Show Me The Money"의 인프라를 AWS 기반으로 전면 전환하는 2차 프로젝트입니다.
 
 - 1차 프로젝트: https://github.com/YeonWoojuice/ShowMeTheMoney/tree/main
+- 서비스 접속: https://smtm.mang.pe.kr
 
 - **인프라 전환**: VMware Fusion 기반 온프레미스 Kubernetes → EC2+Docker Compose(임시 단계) → AWS EKS
 - **데이터베이스**: RDS MySQL 적용으로 백업·복구 체계 강화
@@ -14,6 +29,20 @@
 - **서비스 기능**: 1차 MVP(회원가입/로그인, 수입·지출 CRUD, 예산, 대시보드 등)를 유지하되, 1차에서 미흡했던 프론트-백엔드 API 스펙 사전 합의로 통합 안정성 개선
 
 단순 가계부 MVP를 넘어 운영 가능한 클라우드 기반 금융 관리 서비스로 확장하는 것이 목표입니다.
+
+## 기술 스택
+
+애플리케이션 스택은 1차 프로젝트와 동일하며, 이번 2차 프로젝트는 이를 얹을 인프라만 교체합니다.
+
+| 영역 | 구성 |
+|---|---|
+| Frontend | React 19 + Next.js 15 (App Router) |
+| Backend | Spring Boot 3.5 + Java 21 + Spring Security + MyBatis |
+| Database | MySQL 8 (RDS) |
+| Infra | AWS EKS, Terraform, Docker, Helm |
+| CI/CD | GitHub Actions, ECR, Argo CD(예정) |
+
+프론트엔드 UI 톤앤매너는 [`DESIGN.md`](DESIGN.md)를 따릅니다.
 
 ## 진행 상태
 
@@ -67,6 +96,18 @@ flowchart TB
 
 EC2 한 대에서 Docker Compose로 Frontend/Backend를 함께 실행하므로 EC2 장애 시 두 애플리케이션이 동시에 중단되는 단일 장애 지점이 있습니다. EKS 전환의 핵심 이유 중 하나입니다.
 
+### ERD
+
+`backend/src/main/resources/db/migration`의 테이블 구조 기준(다이어그램 소스: [`docs/images/erd.puml`](docs/images/erd.puml), PlantUML). 가독성을 위해 `created_at`/`updated_at`/`deleted_at` 공통 컬럼은 생략했습니다.
+
+![ERD](docs/images/erd.png)
+
+스키마가 바뀌면 아래 명령으로 이미지를 다시 생성합니다(Graphviz 설치 필요: `brew install graphviz`).
+
+```bash
+npx -y node-plantuml generate -p -d "$(which dot)" docs/images/erd.puml -o docs/images/erd.png
+```
+
 ## AWS 리소스 스펙 요약
 
 전체 리소스 명세(ID·ARN·태그까지 포함한 상세본)는 [`docs/SMTM_EC2_EKS_FULL_RESOURCE_SPEC.md`](docs/SMTM_EC2_EKS_FULL_RESOURCE_SPEC.md)(EC2+EKS 전체 비교)와 [`docs/SMTM_EKS_TRANSITION_NEW_RESOURCE_SPEC.md`](docs/SMTM_EKS_TRANSITION_NEW_RESOURCE_SPEC.md)(EKS 전환 신규 리소스만)를 참고하십시오. 아래는 핵심만 요약한 표입니다.
@@ -108,6 +149,7 @@ EC2 한 대에서 Docker Compose로 Frontend/Backend를 함께 실행하므로 E
 | 참고 | [`docs/RESOURCE_NAMING_CONVENTION.md`](docs/RESOURCE_NAMING_CONVENTION.md) | 리소스 명명 규칙 |
 | 참고 | [`docs/CI_CD_SCENARIO.md`](docs/CI_CD_SCENARIO.md) | CI/CD 시나리오, 이 문서 상단 안내 참고) |
 | 참고 | [`docs/EKS_HELM_CHECKLIST.md`](docs/EKS_HELM_CHECKLIST.md) | Helm 배포 전 팀원과 확정해야 하는 값 체크리스트 |
+| 참고 | [`docs/api/`](docs/api/README.md) | 프론트-백엔드 API 스펙(`api.md`) 및 Postman 컬렉션. 1차 프로젝트의 API 계약 불일치 문제를 막기 위해 구현 전 합의하는 문서 |
 
 ## 사용법
 
@@ -115,7 +157,8 @@ EC2 한 대에서 Docker Compose로 Frontend/Backend를 함께 실행하므로 E
 
 1. `.env.example` → `.env` 복사 후 값 채우기 (루트)
 2. `backend/.env.example` → `backend/.env` 복사 후 값 채우기
-3. RDS 없이 로컬 MySQL 컨테이너까지 함께 띄우려면:
+3. 포트 충돌 주의: docker-compose는 **3306(MySQL, 로컬 MySQL 사용 시)·8080(Backend)·3000(Frontend)** 포트를 사용합니다. 로컬에 동일 포트로 떠 있는 프로세스가 있다면 먼저 종료하세요.
+4. RDS 없이 로컬 MySQL 컨테이너까지 함께 띄우려면:
    ```bash
    docker compose -f docker-compose.yml -f docker-compose.local.yml up --build
    ```
@@ -124,6 +167,8 @@ EC2 한 대에서 Docker Compose로 Frontend/Backend를 함께 실행하므로 E
    docker compose up -d --build
    docker compose logs -f backend   # RDS 연결/Flyway 마이그레이션 확인
    ```
+
+종료 시 `docker compose down`(컨테이너만 종료) 또는 `docker compose down -v`(DB 데이터까지 초기화)를 사용합니다.
 
 `docker compose build`는 태그를 지정하지 않으면 이미지에 `latest`가 붙습니다. 이 방식은 **로컬 개발 전용**이며 EKS/ECR로 올라가는 이미지가 아닙니다. EKS에 배포하는 이미지는 아래처럼 항상 SHA 태그를 명시해서 별도로 빌드합니다.
 
