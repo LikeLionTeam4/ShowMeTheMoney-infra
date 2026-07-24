@@ -3,33 +3,21 @@ erDiagram
         bigint uuid PK
         varchar username UK
         varchar email UK
-        varchar password
         varchar nickname
-        datetime created_at
-        datetime updated_at
-        datetime deleted_at
+    }
+
+    budgets {
+        bigint uuid PK
+        bigint uuid_user FK
+        char year_month
+        decimal amount
     }
 
     categories {
         bigint uuid PK
         varchar code
-        varchar code_number UK
         varchar name
         tinyint type "0=지출, 1=수입"
-    }
-
-    transactions {
-        bigint uuid PK
-        bigint uuid_user FK
-        bigint uuid_category FK
-        bigint uuid_recurring_item FK
-        tinyint type "0=지출, 1=수입"
-        decimal amount
-        varchar memo
-        date transaction_date
-        datetime created_at
-        datetime updated_at
-        datetime deleted_at
     }
 
     recurring_items {
@@ -41,23 +29,22 @@ erDiagram
         decimal amount
         tinyint billing_day
         tinyint is_active
-        datetime created_at
-        datetime updated_at
-        datetime deleted_at
     }
 
-    budgets {
+    transactions {
         bigint uuid PK
         bigint uuid_user FK
-        char year_month
+        bigint uuid_category FK
+        bigint uuid_recurring_item FK
+        tinyint type "0=지출, 1=수입"
         decimal amount
-        datetime created_at
-        datetime updated_at
+        varchar memo
+        date transaction_date
     }
 
-    users ||--o{ transactions : "uuid_user"
-    users ||--o{ recurring_items : "uuid_user"
     users ||--o{ budgets : "uuid_user"
-    categories ||--o{ transactions : "uuid_category"
+    users ||--o{ recurring_items : "uuid_user"
+    users ||--o{ transactions : "uuid_user"
     categories ||--o{ recurring_items : "uuid_category"
+    categories ||--o{ transactions : "uuid_category"
     recurring_items |o--o{ transactions : "uuid_recurring_item"

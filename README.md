@@ -98,7 +98,7 @@ EC2 한 대에서 Docker Compose로 Frontend/Backend를 함께 실행하므로 E
 
 ### ERD
 
-`backend/src/main/resources/db/migration`의 테이블 구조 기준(다이어그램 소스: [`docs/images/erd.mmd`](docs/images/erd.mmd)).
+`backend/src/main/resources/db/migration`의 테이블 구조 기준(다이어그램 소스: [`docs/images/erd.mmd`](docs/images/erd.mmd)). 가독성을 위해 `created_at`/`updated_at`/`deleted_at` 공통 컬럼은 생략했습니다.
 
 ![ERD](docs/images/erd.png)
 
