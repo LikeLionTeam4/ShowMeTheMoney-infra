@@ -2,18 +2,82 @@
 
 @variant dark (&:where(.dark, .dark *));
 
-:root {
-  --background: #f3f4f6;
-  --foreground: #111827;
+@theme {
+  --color-accent: #ff6000;
+  --color-foreground: #222222;
+  --color-muted: #a3a3a3;
+  --color-muted-secondary: #737373;
+  --color-hairline: #e5e5e5;
+  --color-surface-warm: #fcf4ee;
+  --color-border: #d4d4d4;
+  --color-canvas: #ffffff;
+  --color-page: #f3f4f6;
 }
 
 .dark {
-  --background: #030712;
-  --foreground: #f9fafb;
+  --color-accent: #ff7a33;
+  --color-foreground: #f2f2f2;
+  --color-muted: #9c9c9c;
+  --color-muted-secondary: #b0b0b0;
+  --color-hairline: #2e2e2e;
+  --color-surface-warm: #2a1f18;
+  --color-border: #3f3f3f;
+  --color-canvas: #121212;
+  --color-page: #0a0a0a;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-page);
+  color: var(--color-foreground);
+  font-family: var(--font-pretendard), Arial, Helvetica, sans-serif;
+}
+
+/* LikeLion-toned surfaces & buttons — see /DESIGN.md */
+
+.card {
+  background: var(--color-canvas);
+  border: 1px solid var(--color-hairline);
+  border-radius: 0.75rem;
+  box-shadow: none;
+}
+
+.card-warm {
+  background: var(--color-surface-warm);
+  border-radius: 1rem;
+}
+
+.btn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 10px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: opacity 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-pill-outline {
+  border: 1px solid var(--color-border);
+  color: var(--color-foreground);
+  background: transparent;
+}
+
+.btn-pill-outline:hover {
+  background: var(--color-hairline);
+}
+
+.btn-pill-solid {
+  background: var(--color-foreground);
+  color: var(--color-canvas);
+}
+
+.btn-pill-solid:hover {
+  opacity: 0.85;
+}
+
+.btn-pill-solid:disabled,
+.btn-pill-outline:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

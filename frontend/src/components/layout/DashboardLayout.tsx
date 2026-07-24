@@ -23,7 +23,7 @@ export default function DashboardLayout({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-white">
+      <div className="flex items-center justify-center min-h-screen bg-page text-foreground">
         로딩 중...
       </div>
     );
@@ -32,9 +32,9 @@ export default function DashboardLayout({
   if (!isLoggedIn) return null;
 
   return (
-    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-950">
+    <div className="flex min-h-screen bg-page">
       <Sidebar />
-      <main className="flex-1 overflow-auto text-gray-900 dark:text-white">
+      <main className="flex-1 overflow-auto text-foreground">
         {children}
       </main>
     </div>

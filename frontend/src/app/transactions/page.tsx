@@ -57,25 +57,25 @@ export default function TransactionsPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-6 text-gray-900 dark:text-white">
+      <div className="p-6 text-foreground">
         {/* 헤더 */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-xl font-bold">거래 내역 관리</h1>
-            <p className="text-sm text-gray-400 mt-0.5">
+            <p className="text-sm text-muted mt-0.5">
               수입과 지출 내역을 확인하고 관리하세요
             </p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setSort((s) => (s === "desc" ? "asc" : "desc"))}
-              className="px-3 py-1.5 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-lg text-sm text-gray-800 dark:text-white"
+              className="btn-pill btn-pill-outline"
             >
               {sort === "desc" ? "최신순 ↓" : "오래된순 ↑"}
             </button>
             <button
               onClick={() => setShowModal(true)}
-              className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium"
+              className="btn-pill btn-pill-solid"
             >
               + 거래 등록
             </button>
@@ -90,7 +90,7 @@ export default function TransactionsPage() {
               setYearMonth(toYearMonth(d));
               setPage(0);
             }}
-            className="px-3 py-1.5 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-lg text-sm text-gray-800 dark:text-white"
+            className="btn-pill btn-pill-outline"
           >
             이전 달
           </button>
@@ -101,7 +101,7 @@ export default function TransactionsPage() {
               setYearMonth(toYearMonth(d));
               setPage(0);
             }}
-            className="px-3 py-1.5 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-lg text-sm text-gray-800 dark:text-white"
+            className="btn-pill btn-pill-outline"
           >
             다음 달
           </button>
@@ -111,10 +111,10 @@ export default function TransactionsPage() {
               <button
                 key={t}
                 onClick={() => { setTypeFilter(t); setPage(0); }}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                   typeFilter === t
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-700"
+                    ? "bg-accent text-canvas"
+                    : "bg-hairline text-muted-secondary hover:opacity-80"
                 }`}
               >
                 {t === "ALL" ? "전체" : t === "INCOME" ? "수입" : "지출"}
@@ -125,25 +125,25 @@ export default function TransactionsPage() {
 
         {/* 요약 카드 */}
         <div className="grid grid-cols-3 gap-4 mb-5">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-4">
-            <p className="text-xs text-gray-400 mb-1">총 건수</p>
+          <div className="card p-4">
+            <p className="text-xs text-muted mb-1">총 건수</p>
             <p className="text-xl font-bold">{totalElements}건</p>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-4">
-            <p className="text-xs text-gray-400 mb-1">총 수입</p>
+          <div className="card p-4">
+            <p className="text-xs text-muted mb-1">총 수입</p>
             <p className="text-xl font-bold text-green-400">{formatCurrency(totalIncome)}</p>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-4">
-            <p className="text-xs text-gray-400 mb-1">총 지출</p>
+          <div className="card p-4">
+            <p className="text-xs text-muted mb-1">총 지출</p>
             <p className="text-xl font-bold text-red-400">{formatCurrency(totalExpense)}</p>
           </div>
         </div>
 
         {/* 테이블 */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden">
+        <div className="card overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-xs text-gray-400 border-b border-gray-200 dark:border-gray-700">
+              <tr className="text-xs text-muted border-b border-hairline">
                 <th className="px-4 py-3 text-left">날짜</th>
                 <th className="px-4 py-3 text-left">유형</th>
                 <th className="px-4 py-3 text-left">카테고리</th>
@@ -155,8 +155,8 @@ export default function TransactionsPage() {
             <tbody>
               {transactions.length > 0 ? (
                 transactions.map((tx) => (
-                  <tr key={tx.id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/30">
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{formatDate(tx.transactionAt)}</td>
+                  <tr key={tx.id} className="border-b border-hairline hover:bg-hairline/30">
+                    <td className="px-4 py-3 text-muted-secondary">{formatDate(tx.transactionAt)}</td>
                     <td className="px-4 py-3">
                       <span
                         className={`text-xs px-2 py-0.5 rounded-full ${
@@ -168,8 +168,8 @@ export default function TransactionsPage() {
                         {tx.type === "INCOME" ? "수입" : "지출"}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{tx.categoryName}</td>
-                    <td className="px-4 py-3 text-gray-400 dark:text-gray-400">{tx.memo ?? "-"}</td>
+                    <td className="px-4 py-3 text-muted-secondary">{tx.categoryName}</td>
+                    <td className="px-4 py-3 text-muted">{tx.memo ?? "-"}</td>
                     <td className={`px-4 py-3 text-right font-medium ${
                       tx.type === "INCOME" ? "text-green-400" : "text-red-400"
                     }`}>
@@ -178,7 +178,7 @@ export default function TransactionsPage() {
                     <td className="px-4 py-3 text-center">
                       <button
                         onClick={() => handleDelete(tx.id)}
-                        className="text-xs text-gray-500 hover:text-red-400"
+                        className="text-xs text-muted hover:text-red-400"
                       >
                         삭제
                       </button>
@@ -187,7 +187,7 @@ export default function TransactionsPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-gray-500">
+                  <td colSpan={6} className="px-4 py-12 text-center text-muted">
                     거래 내역이 없습니다.
                   </td>
                 </tr>
@@ -202,10 +202,10 @@ export default function TransactionsPage() {
                 <button
                   key={i}
                   onClick={() => setPage(i)}
-                  className={`w-8 h-8 rounded-lg text-xs ${
+                  className={`w-8 h-8 rounded-full text-xs ${
                     page === i
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600"
+                      ? "bg-accent text-canvas"
+                      : "bg-hairline text-muted hover:opacity-80"
                   }`}
                 >
                   {i + 1}
