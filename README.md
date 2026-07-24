@@ -98,9 +98,15 @@ EC2 한 대에서 Docker Compose로 Frontend/Backend를 함께 실행하므로 E
 
 ### ERD
 
-`backend/src/main/resources/db/migration`의 테이블 구조 기준(다이어그램 소스: [`docs/images/erd.mmd`](docs/images/erd.mmd)). 가독성을 위해 `created_at`/`updated_at`/`deleted_at` 공통 컬럼은 생략했습니다.
+`backend/src/main/resources/db/migration`의 테이블 구조 기준(다이어그램 소스: [`docs/images/erd.puml`](docs/images/erd.puml), PlantUML). 가독성을 위해 `created_at`/`updated_at`/`deleted_at` 공통 컬럼은 생략했습니다.
 
 ![ERD](docs/images/erd.png)
+
+스키마가 바뀌면 아래 명령으로 이미지를 다시 생성합니다(Graphviz 설치 필요: `brew install graphviz`).
+
+```bash
+npx -y node-plantuml generate -p -d "$(which dot)" docs/images/erd.puml -o docs/images/erd.png
+```
 
 ## AWS 리소스 스펙 요약
 

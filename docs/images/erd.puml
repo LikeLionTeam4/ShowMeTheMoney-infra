@@ -1,0 +1,71 @@
+@startuml erd
+skinparam dpi 200
+skinparam linetype polyline
+skinparam roundcorner 6
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam class {
+  BackgroundColor White
+  BorderColor #6B5FC6
+  ArrowColor #6B5FC6
+  HeaderBackgroundColor #EDEBFB
+}
+
+hide circle
+hide empty members
+
+entity "users" as users {
+  * uuid : bigint <<PK>>
+  --
+  username : varchar <<UK>>
+  email : varchar <<UK>>
+  nickname : varchar
+}
+
+entity "categories" as categories {
+  * uuid : bigint <<PK>>
+  --
+  code : varchar
+  name : varchar
+  type : tinyint (0=지출, 1=수입)
+}
+
+entity "budgets" as budgets {
+  * uuid : bigint <<PK>>
+  --
+  uuid_user : bigint <<FK>>
+  year_month : char(7)
+  amount : decimal
+}
+
+entity "recurring_items" as recurring_items {
+  * uuid : bigint <<PK>>
+  --
+  uuid_user : bigint <<FK>>
+  uuid_category : bigint <<FK>>
+  type : tinyint (0=지출, 1=수입)
+  name : varchar
+  amount : decimal
+  billing_day : tinyint
+  is_active : tinyint
+}
+
+entity "transactions" as transactions {
+  * uuid : bigint <<PK>>
+  --
+  uuid_user : bigint <<FK>>
+  uuid_category : bigint <<FK>>
+  uuid_recurring_item : bigint <<FK>>
+  type : tinyint (0=지출, 1=수입)
+  amount : decimal
+  memo : varchar
+  transaction_date : date
+}
+
+users ||--o{ budgets : uuid_user
+users ||--o{ recurring_items : uuid_user
+users ||--o{ transactions : uuid_user
+categories ||--o{ recurring_items : uuid_category
+categories ||--o{ transactions : uuid_category
+recurring_items |o..o{ transactions : uuid_recurring_item
+@enduml
