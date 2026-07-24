@@ -60,8 +60,6 @@
 
 ## 아키텍처
 
-> 🖼️ **[이미지 삽입 위치]** — 아래 mermaid 다이어그램을 대체/보완할 AWS 아키텍처 다이어그램 이미지(draw.io, AWS 아이콘 세트 등으로 제작한 png/svg)를 삽입하세요.
-
 ### 현재 EKS 기반 트래픽 경로
 
 ```mermaid
@@ -100,7 +98,9 @@ EC2 한 대에서 Docker Compose로 Frontend/Backend를 함께 실행하므로 E
 
 ### ERD
 
-> 🖼️ **[이미지 삽입 위치]** — `backend/src/main/resources/db/migration`의 테이블 구조를 기준으로 한 ERD 이미지를 삽입하세요.
+`backend/src/main/resources/db/migration`의 테이블 구조 기준(다이어그램 소스: [`docs/images/erd.mmd`](docs/images/erd.mmd)).
+
+![ERD](docs/images/erd.png)
 
 ## AWS 리소스 스펙 요약
 
