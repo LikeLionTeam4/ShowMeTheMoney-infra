@@ -548,6 +548,14 @@
           }
         },
         {
+          "name": "yearMonth 형식 오류 (daily) → 400 INVALID_INPUT",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/dashboard/daily?yearMonth=abc", "host": ["{{baseUrl}}"], "path": ["dashboard", "daily"], "query": [{ "key": "yearMonth", "value": "abc" }] }
+          }
+        },
+        {
           "name": "[버그] yearMonth 파라미터 누락 → 401 (기대: 400)",
           "request": {
             "method": "GET",

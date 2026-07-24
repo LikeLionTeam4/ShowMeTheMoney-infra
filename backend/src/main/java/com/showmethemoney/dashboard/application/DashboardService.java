@@ -4,15 +4,22 @@ import com.showmethemoney.budget.domain.Budget;
 import com.showmethemoney.budget.infrastructure.BudgetMapper;
 import com.showmethemoney.common.YearMonthKey;
 import com.showmethemoney.dashboard.infrastructure.CategoryAmountRow;
+import com.showmethemoney.dashboard.infrastructure.DailyAmountRow;
 import com.showmethemoney.dashboard.infrastructure.DashboardMapper;
 import com.showmethemoney.dashboard.interfaces.dto.CategoryExpenseResponse;
+import com.showmethemoney.dashboard.interfaces.dto.DailyBalancePoint;
+import com.showmethemoney.dashboard.interfaces.dto.DashboardDailyResponse;
 import com.showmethemoney.dashboard.interfaces.dto.DashboardSummaryResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class DashboardService {
@@ -65,5 +72,38 @@ public class DashboardService {
                     return new CategoryExpenseResponse(row.getCategoryCode(), row.getCategoryName(), row.getAmount(), percentage);
                 })
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public DashboardDailyResponse getDailyBalances(Long userId, String yearMonth) {
+        String dbYearMonth = YearMonthKey.toDbFormat(yearMonth);
+
+        Budget budget = budgetMapper.findByUserIdAndYearMonth(userId, dbYearMonth);
+        BigDecimal budgetAmount = budget != null ? budget.getAmount() : null;
+
+        Map<String, BigDecimal> incomeByDate = new HashMap<>();
+        Map<String, BigDecimal> expenseByDate = new HashMap<>();
+        for (DailyAmountRow row : dashboardMapper.sumDailyAmounts(userId, dbYearMonth)) {
+            if (row.getType() == 1) {
+                incomeByDate.put(row.getTxDate(), row.getAmount());
+            } else {
+                expenseByDate.put(row.getTxDate(), row.getAmount());
+            }
+        }
+
+        YearMonth month = YearMonth.parse(dbYearMonth);
+        List<DailyBalancePoint> days = new ArrayList<>();
+        BigDecimal cumulativeExpense = BigDecimal.ZERO;
+        BigDecimal cumulativeBalance = BigDecimal.ZERO;
+        for (int day = 1; day <= month.lengthOfMonth(); day++) {
+            String date = month.atDay(day).toString();
+            BigDecimal income = incomeByDate.getOrDefault(date, BigDecimal.ZERO);
+            BigDecimal expense = expenseByDate.getOrDefault(date, BigDecimal.ZERO);
+            cumulativeExpense = cumulativeExpense.add(expense);
+            cumulativeBalance = cumulativeBalance.add(income).subtract(expense);
+            days.add(new DailyBalancePoint(date, income, expense, cumulativeExpense, cumulativeBalance));
+        }
+
+        return new DashboardDailyResponse(dbYearMonth, budgetAmount, days);
     }
 }

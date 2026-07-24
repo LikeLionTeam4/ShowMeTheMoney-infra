@@ -24,8 +24,8 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-56 min-h-screen bg-gray-900 dark:bg-gray-950 flex flex-col text-white border-r border-gray-200 dark:border-white/5">
-      <div className="px-6 py-5 border-b border-white/10">
+    <aside className="w-56 min-h-screen bg-canvas flex flex-col text-foreground border-r border-hairline">
+      <div className="px-6 py-5 border-b border-hairline">
         <span className="font-bold text-base tracking-tight">MoneyFlowOps</span>
       </div>
 
@@ -36,10 +36,10 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm border transition-colors ${
                 active
-                  ? "bg-blue-600 text-white"
-                  : "text-gray-400 hover:bg-white/10 hover:text-white"
+                  ? "border-accent/30 bg-accent/10 text-accent"
+                  : "border-transparent text-muted hover:bg-hairline hover:text-foreground"
               }`}
             >
               <span className="text-base">{item.icon}</span>
@@ -49,19 +49,19 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="px-4 py-4 border-t border-white/10 flex flex-col gap-2">
+      <div className="px-4 py-4 border-t border-hairline flex flex-col gap-2">
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="flex items-center gap-2 text-xs text-gray-400 hover:text-white transition-colors"
+          className="flex items-center gap-2 text-xs text-muted hover:text-foreground transition-colors"
         >
           <span>{theme === "dark" ? "☀️" : "🌙"}</span>
           {theme === "dark" ? "라이트 모드" : "다크 모드"}
         </button>
 
-        <p className="text-xs text-gray-400">{user?.name}</p>
+        <p className="text-xs text-muted">{user?.name}</p>
         <button
           onClick={handleLogout}
-          className="text-xs text-gray-500 hover:text-white transition-colors text-left"
+          className="text-xs text-muted-secondary hover:text-foreground transition-colors text-left"
         >
           로그아웃
         </button>

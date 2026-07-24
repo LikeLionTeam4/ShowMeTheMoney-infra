@@ -57,10 +57,10 @@ export default function BudgetPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-6 text-gray-900 dark:text-white">
+      <div className="p-6 text-foreground">
         <div className="mb-6">
           <h1 className="text-xl font-bold">월별 예산 설정</h1>
-          <p className="text-sm text-gray-400 mt-0.5">
+          <p className="text-sm text-muted mt-0.5">
             월별 지출 예산을 설정하고 관리하세요
           </p>
         </div>
@@ -73,7 +73,7 @@ export default function BudgetPage() {
               setYearMonth(toYearMonth(d));
               setIsEditing(false);
             }}
-            className="px-3 py-1.5 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-lg text-sm text-gray-800 dark:text-white"
+            className="btn-pill btn-pill-outline"
           >
             이전 달
           </button>
@@ -84,7 +84,7 @@ export default function BudgetPage() {
               setYearMonth(toYearMonth(d));
               setIsEditing(false);
             }}
-            className="px-3 py-1.5 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-lg text-sm text-gray-800 dark:text-white"
+            className="btn-pill btn-pill-outline"
           >
             다음 달
           </button>
@@ -93,28 +93,28 @@ export default function BudgetPage() {
         <div className="max-w-md">
           {/* 현재 예산 표시 */}
           {budget && !isEditing ? (
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 mb-4">
-              <p className="text-xs text-gray-400 mb-1">{formatYearMonth(yearMonth)} 예산</p>
-              <p className="text-3xl font-bold text-blue-400 mb-4">
+            <div className="card p-6 mb-4">
+              <p className="text-xs text-muted mb-1">{formatYearMonth(yearMonth)} 예산</p>
+              <p className="text-3xl font-bold text-accent mb-4">
                 {formatCurrency(budget.amount)}
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm"
+                  className="btn-pill btn-pill-solid"
                 >
                   수정
                 </button>
               </div>
             </div>
           ) : (
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6">
+            <div className="card p-6">
               <p className="text-sm font-medium mb-4">
                 {budget ? "예산 수정" : `${formatYearMonth(yearMonth)} 예산 등록`}
               </p>
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs text-gray-400">예산 금액 *</label>
+                  <label className="text-xs text-muted">예산 금액 *</label>
                   <div className="relative">
                     <input
                       type="number"
@@ -123,9 +123,9 @@ export default function BudgetPage() {
                       onChange={(e) => setAmount(e.target.value)}
                       required
                       min={1}
-                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8 text-white"
+                      className="w-full bg-canvas border border-hairline rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent pr-8 text-foreground"
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">원</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted">원</span>
                   </div>
                 </div>
 
@@ -140,7 +140,7 @@ export default function BudgetPage() {
                     <button
                       type="button"
                       onClick={() => setIsEditing(false)}
-                      className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm"
+                      className="flex-1 btn-pill btn-pill-outline"
                     >
                       취소
                     </button>
@@ -148,7 +148,7 @@ export default function BudgetPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium disabled:opacity-50"
+                    className="flex-1 btn-pill btn-pill-solid font-medium"
                   >
                     {loading ? "저장 중..." : budget ? "수정 완료" : "예산 등록"}
                   </button>

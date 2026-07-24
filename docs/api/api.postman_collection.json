@@ -380,6 +380,21 @@
               ]
             }
           }
+        },
+        {
+          "name": "일별 잔액 추이 조회",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/daily?yearMonth=202606",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "daily"],
+              "query": [
+                { "key": "yearMonth", "value": "202606" }
+              ]
+            }
+          }
         }
       ]
     },

@@ -74,6 +74,20 @@ export interface CategoryExpense {
   ratio: number;
 }
 
+export interface DailyBalancePoint {
+  date: string;
+  income: number;
+  expense: number;
+  cumulativeExpense: number;
+  cumulativeBalance: number;
+}
+
+export interface DashboardDaily {
+  yearMonth: string;
+  budgetAmount: number | null;
+  days: DailyBalancePoint[];
+}
+
 export interface TransactionPageResponse {
   content: Transaction[];
   totalElements: number;

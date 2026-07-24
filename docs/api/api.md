@@ -634,6 +634,52 @@ GET /dashboard/categories?yearMonth={yearMonth}
 
 ---
 
+### 일별 잔액 추이 조회
+
+```
+GET /dashboard/daily?yearMonth={yearMonth}
+```
+
+해당 월의 1일부터 말일까지 하루 단위로 수입/지출과 누적 지출·누적 잔액을 반환한다. 거래가 없는 날짜도 0으로 채워서 반환하므로 프론트엔드는 별도 보간 없이 그대로 그래프에 사용할 수 있다.
+
+**Query Parameters**
+| 파라미터 | 타입 | 필수 | 설명 |
+|---|---|---|---|
+| yearMonth | String | ✅ | 연월 (`202606` 형식) |
+
+**Response** `200`
+```json
+{
+  "success": true,
+  "data": {
+    "yearMonth": "2026-06",
+    "budgetAmount": 2000000,
+    "days": [
+      {
+        "date": "2026-06-01",
+        "income": 0,
+        "expense": 100000,
+        "cumulativeExpense": 100000,
+        "cumulativeBalance": -100000
+      },
+      {
+        "date": "2026-06-02",
+        "income": 3000000,
+        "expense": 0,
+        "cumulativeExpense": 100000,
+        "cumulativeBalance": 2900000
+      }
+    ]
+  },
+  "error": null
+}
+```
+
+- `budgetAmount`는 해당 월에 설정된 예산이 없으면 `null`이다.
+- `cumulativeExpense`는 1일부터 해당 날짜까지의 누적 지출, `cumulativeBalance`는 누적 수입에서 누적 지출을 뺀 값이다.
+
+---
+
 ## System
 
 ### 헬스 체크

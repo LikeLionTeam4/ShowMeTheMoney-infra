@@ -44,17 +44,17 @@ export default function RecurringPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-6 text-gray-900 dark:text-white">
+      <div className="p-6 text-foreground">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-xl font-bold">고정 수입/지출</h1>
-            <p className="text-sm text-gray-400 mt-0.5">
+            <p className="text-sm text-muted mt-0.5">
               매월 반복되는 수입과 지출을 관리하세요
             </p>
           </div>
           <button
             onClick={() => setShowForm(true)}
-            className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium"
+            className="btn-pill btn-pill-solid"
           >
             + 항목 추가
           </button>
@@ -66,10 +66,10 @@ export default function RecurringPage() {
             <button
               key={t}
               onClick={() => setTypeFilter(t)}
-              className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                 typeFilter === t
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-700"
+                  ? "bg-accent text-canvas"
+                  : "bg-hairline text-muted-secondary hover:opacity-80"
               }`}
             >
               {t === "ALL" ? "전체" : t === "INCOME" ? "수입" : "지출"}
@@ -83,7 +83,7 @@ export default function RecurringPage() {
             filtered.map((item) => (
               <div
                 key={item.id}
-                className={`bg-white dark:bg-gray-800 rounded-xl p-4 flex items-center justify-between ${
+                className={`card p-4 flex items-center justify-between ${
                   item.isActive === 0 ? "opacity-50" : ""
                 }`}
               >
@@ -94,8 +94,8 @@ export default function RecurringPage() {
                     }`}
                   />
                   <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">{item.name}</p>
-                    <p className="text-xs text-gray-400 dark:text-gray-400">
+                    <p className="text-sm font-medium text-foreground">{item.name}</p>
+                    <p className="text-xs text-muted">
                       {item.categoryName} · 매월 {item.billingDay}일
                     </p>
                   </div>
@@ -112,17 +112,17 @@ export default function RecurringPage() {
                   </span>
                   <button
                     onClick={() => handleToggle(item)}
-                    className={`text-xs px-2 py-1 rounded-lg border transition-colors ${
+                    className={`text-xs px-2 py-1 rounded-full border transition-colors ${
                       item.isActive === 1
                         ? "border-green-500/30 text-green-400 hover:bg-green-500/10"
-                        : "border-gray-600 text-gray-500 hover:bg-gray-700"
+                        : "border-hairline text-muted hover:bg-hairline"
                     }`}
                   >
                     {item.isActive === 1 ? "활성" : "비활성"}
                   </button>
                   <button
                     onClick={() => handleDelete(item.id)}
-                    className="text-xs text-gray-500 hover:text-red-400"
+                    className="text-xs text-muted hover:text-red-400"
                   >
                     삭제
                   </button>
@@ -130,7 +130,7 @@ export default function RecurringPage() {
               </div>
             ))
           ) : (
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-12 text-center text-gray-500">
+            <div className="card p-12 text-center text-muted">
               등록된 고정 항목이 없습니다.
             </div>
           )}
@@ -191,16 +191,16 @@ function RecurringForm({
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl text-gray-900">
+      <div className="bg-canvas rounded-2xl w-full max-w-md p-6 border border-hairline text-foreground">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-base font-bold">고정 항목 등록</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">✕</button>
+          <button onClick={onClose} className="text-muted hover:text-foreground">✕</button>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* 유형 탭 */}
           <div>
-            <p className="text-xs text-gray-500 mb-2">거래 유형 *</p>
+            <p className="text-xs text-muted mb-2">거래 유형 *</p>
             <div className="flex gap-2">
               {(["EXPENSE", "INCOME"] as TransactionType[]).map((t) => (
                 <button
@@ -211,8 +211,8 @@ function RecurringForm({
                     type === t
                       ? t === "EXPENSE"
                         ? "bg-red-500 border-red-500 text-white"
-                        : "bg-blue-500 border-blue-500 text-white"
-                      : "border-gray-200 text-gray-500 hover:bg-gray-50"
+                        : "bg-green-500 border-green-500 text-white"
+                      : "border-hairline text-muted-secondary hover:bg-hairline"
                   }`}
                 >
                   {t === "EXPENSE" ? "지출" : "수입"}
@@ -223,7 +223,7 @@ function RecurringForm({
 
           {/* 카테고리 */}
           <div>
-            <p className="text-xs text-gray-500 mb-2">카테고리 *</p>
+            <p className="text-xs text-muted mb-2">카테고리 *</p>
             <div className="flex flex-wrap gap-2">
               {categories.map((cat) => (
                 <button
@@ -232,8 +232,8 @@ function RecurringForm({
                   onClick={() => setCategoryCode(cat.code)}
                   className={`px-3 py-1.5 rounded-lg text-xs border transition-colors ${
                     categoryCode === cat.code
-                      ? "bg-gray-800 border-gray-800 text-white"
-                      : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                      ? "bg-foreground border-foreground text-canvas"
+                      : "border-hairline text-muted-secondary hover:bg-hairline"
                   }`}
                 >
                   {cat.name}
@@ -244,21 +244,21 @@ function RecurringForm({
 
           {/* 항목명 */}
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500">항목명 *</label>
+            <label className="text-xs text-muted">항목명 *</label>
             <input
               type="text"
               placeholder="예: 넷플릭스 구독"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-canvas border border-hairline rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
 
           <div className="flex gap-3">
             {/* 금액 */}
             <div className="flex-1 flex flex-col gap-1">
-              <label className="text-xs text-gray-500">금액 *</label>
+              <label className="text-xs text-muted">금액 *</label>
               <div className="relative">
                 <input
                   type="number"
@@ -267,15 +267,15 @@ function RecurringForm({
                   onChange={(e) => setAmount(e.target.value)}
                   required
                   min={1}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8"
+                  className="w-full bg-canvas border border-hairline rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent pr-8"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">원</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted">원</span>
               </div>
             </div>
 
             {/* 결제일 */}
             <div className="w-24 flex flex-col gap-1">
-              <label className="text-xs text-gray-500">결제일 *</label>
+              <label className="text-xs text-muted">결제일 *</label>
               <div className="relative">
                 <input
                   type="number"
@@ -285,15 +285,15 @@ function RecurringForm({
                   required
                   min={1}
                   max={31}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-6"
+                  className="w-full bg-canvas border border-hairline rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent pr-6"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">일</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted">일</span>
               </div>
             </div>
           </div>
 
           {error && (
-            <p className="text-xs text-red-500 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+            <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
               {error}
             </p>
           )}
@@ -302,14 +302,14 @@ function RecurringForm({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50"
+              className="flex-1 btn-pill btn-pill-outline"
             >
               취소
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium disabled:opacity-50"
+              className="flex-1 btn-pill btn-pill-solid font-medium"
             >
               {loading ? "등록 중..." : "등록"}
             </button>

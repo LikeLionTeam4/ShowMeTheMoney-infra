@@ -52,10 +52,10 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white rounded-2xl shadow-md w-full max-w-sm px-8 py-10 text-gray-900">
-        <h1 className="text-2xl font-bold text-center mb-1 text-gray-900">MoneyFlowOps</h1>
-        <p className="text-xs text-gray-400 text-center mb-8">
+    <div className="min-h-screen bg-page flex items-center justify-center">
+      <div className="bg-canvas rounded-2xl border border-hairline w-full max-w-sm px-8 py-10 text-foreground">
+        <h1 className="text-2xl font-bold text-center mb-1 text-foreground">MoneyFlowOps</h1>
+        <p className="text-xs text-muted text-center mb-8">
           새 계정을 만들어 관리를 시작하세요
         </p>
 
@@ -68,7 +68,7 @@ export default function SignupPage() {
             { label: "비밀번호 확인", name: "passwordConfirm", type: "password", placeholder: "비밀번호를 한 번 더 입력하세요" },
           ].map((field) => (
             <div key={field.name} className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">{field.label}</label>
+              <label className="text-sm font-medium text-muted-secondary">{field.label}</label>
               <input
                 type={field.type}
                 name={field.name}
@@ -76,13 +76,13 @@ export default function SignupPage() {
                 value={form[field.name as keyof typeof form]}
                 onChange={handleChange}
                 required
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-canvas border border-hairline rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
           ))}
 
           {error && (
-            <p className="text-xs text-red-500 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+            <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
               {error}
             </p>
           )}
@@ -90,15 +90,15 @@ export default function SignupPage() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-sm transition-colors disabled:opacity-50"
+            className="btn-pill btn-pill-solid font-medium transition-colors"
           >
             {loading ? "가입 중..." : "회원가입"}
           </button>
         </form>
 
-        <p className="text-xs text-center text-gray-400 mt-6">
+        <p className="text-xs text-center text-muted mt-6">
           이미 계정이 있으신가요?{" "}
-          <Link href="/auth/login" className="text-blue-600 hover:underline">
+          <Link href="/auth/login" className="text-accent hover:underline">
             로그인
           </Link>
         </p>
