@@ -34,6 +34,7 @@ services:
       DB_NAME: showmethemoney
       DB_USERNAME: showmethemoney
       DB_PASSWORD: local
+      DB_SSL_MODE: DISABLED
 
 volumes:
   mysql_data:
