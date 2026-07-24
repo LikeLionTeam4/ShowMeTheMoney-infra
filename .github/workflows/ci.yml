@@ -119,25 +119,34 @@ jobs:
           helm lint helm/backend --strict --kube-version 1.36.0
           helm lint helm/frontend --strict --kube-version 1.36.0
           helm lint helm/backend --strict --kube-version 1.36.0 \
-            --values helm/backend/values-prod.yaml
+            --values helm/backend/values-ci.yaml
           helm lint helm/frontend --strict --kube-version 1.36.0 \
-            --values helm/frontend/values-prod.yaml
+            --values helm/frontend/values-ci.yaml
 
-      - name: Render production Helm charts
+      - name: Render Helm charts with safe CI values
         run: |
           mkdir -p "${RUNNER_TEMP}/helm-rendered"
 
           helm template smtm-backend helm/backend \
             --namespace smtm \
             --kube-version 1.36.0 \
-            --values helm/backend/values-prod.yaml \
+            --values helm/backend/values-ci.yaml \
             > "${RUNNER_TEMP}/helm-rendered/backend.yaml"
 
           helm template smtm-frontend helm/frontend \
             --namespace smtm \
             --kube-version 1.36.0 \
-            --values helm/frontend/values-prod.yaml \
+            --values helm/frontend/values-ci.yaml \
             > "${RUNNER_TEMP}/helm-rendered/frontend.yaml"
+
+      - name: Reject infrastructure identifiers in tracked configuration
+        run: |
+          if grep -REn \
+            '([0-9]{12}|arn:aws:(acm|secretsmanager)|subnet-[0-9a-f]+|[a-zA-Z0-9.-]+\.rds\.amazonaws\.com)' \
+            helm docs; then
+            echo "Infrastructure identifier found in a tracked configuration file."
+            exit 1
+          fi
 
       - name: Check rendered manifests
         run: |
