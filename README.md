@@ -170,6 +170,7 @@ kubectl -n smtm get deploy,pod,svc,ingress,hpa,pdb
 | `DB_HOST` | RDS 엔드포인트만 입력 (전체 JDBC URL 아님) |
 | `DB_PORT`, `DB_NAME` | 기본값(3306 / showmethemoney) 그대로 둬도 됨 |
 | `DB_USERNAME`, `DB_PASSWORD` | RDS 계정 |
+| `DB_SSL_MODE` | DB 접속 TLS 모드. 미지정 시 `DISABLED`(로컬 db 컨테이너 기준). **운영 RDS에서는 반드시 `REQUIRED`** |
 | `JWT_SECRET`, `JWT_EXPIRATION` | JWT 설정 |
 | `CORS_ALLOWED_ORIGINS` | 운영 도메인 (예: `https://team4.mang.pe.kr`) |
 
