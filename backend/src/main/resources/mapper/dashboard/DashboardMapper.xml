@@ -31,4 +31,20 @@
         ORDER BY amount DESC
     </select>
 
+    <resultMap id="DailyAmountRowResultMap" type="com.showmethemoney.dashboard.infrastructure.DailyAmountRow">
+        <result property="txDate" column="tx_date"/>
+        <result property="type" column="type"/>
+        <result property="amount" column="amount"/>
+    </resultMap>
+
+    <select id="sumDailyAmounts" resultMap="DailyAmountRowResultMap">
+        SELECT DATE_FORMAT(transaction_date, '%Y-%m-%d') AS tx_date, type, SUM(amount) AS amount
+        FROM transactions
+        WHERE uuid_user = #{userId}
+          AND DATE_FORMAT(transaction_date, '%Y-%m') = #{yearMonth}
+          AND deleted_at IS NULL
+        GROUP BY tx_date, type
+        ORDER BY tx_date
+    </select>
+
 </mapper>

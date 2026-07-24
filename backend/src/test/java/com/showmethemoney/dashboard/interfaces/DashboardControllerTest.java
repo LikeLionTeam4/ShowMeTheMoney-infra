@@ -5,6 +5,8 @@ import com.showmethemoney.auth.infrastructure.JwtTokenProvider;
 import com.showmethemoney.config.SecurityConfig;
 import com.showmethemoney.dashboard.application.DashboardService;
 import com.showmethemoney.dashboard.interfaces.dto.CategoryExpenseResponse;
+import com.showmethemoney.dashboard.interfaces.dto.DailyBalancePoint;
+import com.showmethemoney.dashboard.interfaces.dto.DashboardDailyResponse;
 import com.showmethemoney.dashboard.interfaces.dto.DashboardSummaryResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +82,26 @@ class DashboardControllerTest {
                         .with(authentication(userAuth())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.length()").value(1));
+    }
+
+    @Test
+    void 대시보드_일별_잔액_조회() throws Exception {
+        given(dashboardService.getDailyBalances(1L, "202606")).willReturn(
+                new DashboardDailyResponse("2026-06", new BigDecimal("2000000"), List.of(
+                        new DailyBalancePoint("2026-06-01", new BigDecimal("0"), new BigDecimal("100000"),
+                                new BigDecimal("100000"), new BigDecimal("-100000")),
+                        new DailyBalancePoint("2026-06-02", new BigDecimal("3000000"), new BigDecimal("0"),
+                                new BigDecimal("100000"), new BigDecimal("2900000"))
+                )));
+
+        mockMvc.perform(get("/api/dashboard/daily").param("yearMonth", "202606")
+                        .with(authentication(userAuth())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.yearMonth").value("2026-06"))
+                .andExpect(jsonPath("$.data.budgetAmount").value(2000000))
+                .andExpect(jsonPath("$.data.days.length()").value(2))
+                .andExpect(jsonPath("$.data.days[1].cumulativeBalance").value(2900000));
     }
 
     @Test
